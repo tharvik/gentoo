@@ -1,4 +1,4 @@
-# Copyright 1999-2017 Gentoo Foundation
+# Copyright 1999-2018 Gentoo Foundation
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI=6
@@ -13,16 +13,18 @@ EGIT_REPO_URI="https://github.com/rg3/youtube-dl.git"
 LICENSE="public-domain"
 SLOT="0"
 KEYWORDS=""
-IUSE="offensive test"
+IUSE="doc offensive test"
 
 RDEPEND="
 	dev-python/setuptools[${PYTHON_USEDEP}]
 "
 DEPEND="
 	${RDEPEND}
-	dev-python/sphinx[${PYTHON_USEDEP}]
+	doc? ( dev-python/sphinx[${PYTHON_USEDEP}] )
 	test? ( dev-python/nose[coverage(+)] )
 "
+
+DOCS=( AUTHORS ChangeLog README.md )
 
 python_prepare_all() {
 	if ! use offensive; then
@@ -72,6 +74,8 @@ python_prepare_all() {
 }
 
 src_compile() {
+	use doc && emake -C "$S/docs" html
+
 	distutils-r1_src_compile
 }
 
@@ -80,7 +84,7 @@ python_test() {
 }
 
 python_install_all() {
-	dodoc README.md
+	use doc && local HTML_DOCS=( 'docs/_build' )
 
 	distutils-r1_python_install_all
 
